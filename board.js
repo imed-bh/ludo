@@ -1,6 +1,6 @@
 var board = new Graphics();
 
-let u = 32;
+let u = settings.size;
 let fill = {
     'R': 0xEB1C22,
     'B': 0x22A4F0,
@@ -27,13 +27,79 @@ let grid = [
     [ 'B0', 'B0', 'B0', 'B0', 'B0', 'B0', 'W1', 'W1', 'W1', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0' ],
 ];
 
+let end = {
+    'R': [[0,-1], [1.5,0.5], [0,2]],
+    'G': [[-1,0], [2,0], [0.5,1.5]],
+    'Y': [[1,-1], [1,2], [-0.5,0.5]],
+    'B': [[-1,1], [0.5,-0.5], [2,1]]
+};
+
+let star = [
+    [0.5, 0.0],
+    [0.65, 0.35],
+    [1.0, 0.35],
+    [0.7, 0.55],
+    [0.9, 1.0],
+    [0.5, 0.7],
+    [0.1, 1.0],
+    [0.3, 0.55],
+    [0.0, 0.35],
+    [0.35, 0.35],
+    [0.5, 0.0],
+];
+
 function draw(x, y, str) {
     if (str[0] == 'I') return;
 
-    board.beginFill(fill[str[0]]);
+    if (str == 'WS') {
+        drawWS(x, y);
+    } else if (str[1] == 'S') {
+        drawStart(x, y, fill[str[0]]);
+    } else if (str[1] == 'E') {
+        drawEnd(x, y, fill[str[0]], end[str[0]]);
+    } else {
+        let hasBorder = str[1] == '1';
+        board.lineStyle(hasBorder ? 1 : 0, 0, 1);
+        board.beginFill(fill[str[0]]);
+        board.drawRect(x, y, u, u);
+        board.endFill();
+    }
+}
+
+function drawWS(x, y) {
+    board.lineStyle(1, 0, 1);
+    board.beginFill(fill['W']);
     board.drawRect(x, y, u, u);
     board.endFill();
+
+    board.lineStyle(1, 0, 1);
+    board.moveTo(x + u*star[0][0], y + u*star[0][1]);
+    for (var i = 1; i < star.length; i++)
+        board.lineTo(x + u*star[i][0], y + u*star[i][1]);
 }
+
+function drawStart(x, y, c) {
+    board.lineStyle(0, 0, 1);
+    board.beginFill(0xFFFFFF);
+    board.drawRect(x, y, 2*u, 2*u);
+    board.endFill();
+
+    board.beginFill(c);
+    board.drawCircle(x+u, y+u, u/2);
+    board.endFill();
+}
+
+function drawEnd(x, y, c, p) {
+    board.beginFill(c);
+    let path = [];
+    for (var i = 0; i < p.length; i++) {
+        path.push(x+u*p[i][0]);
+        path.push(y+u*p[i][1]);
+    }
+    board.drawPolygon(path);
+    board.endFill();
+}
+
 
 for (var i = 0; i < 15; i++) {
     for (var j = 0; j < 15; j++) {
