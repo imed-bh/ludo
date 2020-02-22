@@ -13,5 +13,10 @@ app.renderer.autoResize = true;
 app.renderer.resize(window.innerWidth, window.innerHeight);
 document.body.appendChild(app.view);
 
+var boardContainer = new PIXI.Container();
+boardContainer.position.x = settings.size;
+boardContainer.position.y = 4 * settings.size;
+boardContainer.addChild(board);
 
-app.stage.addChild(board);
+boardContainer.addChild(g);
+app.stage.addChild(boardContainer);

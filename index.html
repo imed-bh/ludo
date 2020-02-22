@@ -17,7 +17,14 @@
             PIXI.utils.sayHello(type);
             let params = new URLSearchParams(window.location.search);
             var settings = {
-                size: params.has('size') ? parseInt(params.get('size')) : 32
+                size: params.has('size') ? parseInt(params.get('size')) : 32,
+                players: params.has('players') ? parseInt(params.get('players')) : 4,
+                color: {
+                    'R': 0xEB1C22,
+                    'B': 0x22A4F0,
+                    'G': 0x01A048,
+                    'Y': 0xFDDF14,
+                }
             };
         </script>
         <script src="alias.js"></script>
