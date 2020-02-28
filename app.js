@@ -18,4 +18,19 @@ boardContainer.position.x = settings.size;
 boardContainer.position.y = 4 * settings.size;
 boardContainer.addChild(board);
 
+for (var i = 0; i < settings.players.length; i++) {
+    var player = settings.players[i];
+    for (var j = 0; j < pawns[player].length; j++) {
+        var pawn = pawns[player][j];
+        pawn.position.x = spawn[player][j][0] * settings.size;
+        pawn.position.y = spawn[player][j][1] * settings.size;
+        boardContainer.addChild(pawn);
+    }
+    var dice = dices[player];
+    dice.view.position.x = dicesPos[player][0] * settings.size;
+    dice.view.position.y = dicesPos[player][1] * settings.size;
+    dice.setValue(-1);
+    boardContainer.addChild(dice.view);
+}
+
 app.stage.addChild(boardContainer);

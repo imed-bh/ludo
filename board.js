@@ -56,7 +56,21 @@ var paths = {
         [13,8],[12,8],[11,8],[10,8],[9,8],[8,9],[8,10],[8,11],[8,12],[8,13],[8,14],[7,14],
         [7,13],[7,12],[7,11],[7,10],[7,9],[7,8]
     ],
-}
+};
+
+var spawn = {
+    R: [[1.5,1.5],[3.5,1.5],[1.5,3.5],[3.5,3.5]],
+    G: [[10.5,1.5],[12.5,1.5],[10.5,3.5],[12.5,3.5]],
+    Y: [[10.5,10.5],[12.5,10.5],[10.5,12.5],[12.5,12.5]],
+    B: [[1.5,10.5],[3.5,10.5],[1.5,12.5],[3.5,12.5]],
+};
+
+var dicesPos = {
+    R: [1, -2],
+    G: [13, -2],
+    Y: [13, 16],
+    B: [1, 16]
+};
 
 let end = {
     R: [[0,-1], [1.5,0.5], [0,2]],
@@ -136,4 +150,86 @@ for (var i = 0; i < 15; i++) {
     for (var j = 0; j < 15; j++) {
         draw(j*u, i*u, grid[i][j]);
     }    
+}
+
+
+function makePawn(c, i) {
+    var p = new Graphics();
+    p.lineStyle(4,0xFFFFFF,1);
+    p.beginFill(fill[c]);
+    p.drawCircle(u/2, u/2, u*0.4);
+    p.endFill();
+    p.interactive = true;
+    p.on('pointerdown', () => movePawn(c, i));
+    return p;
+}
+
+var pawns = {
+    R: [ makePawn('R', 0), makePawn('R', 1), makePawn('R', 2), makePawn('R', 3) ],
+    G: [ makePawn('G', 0), makePawn('G', 1), makePawn('G', 2), makePawn('G', 3) ],
+    Y: [ makePawn('Y', 0), makePawn('Y', 1), makePawn('Y', 2), makePawn('Y', 3) ],
+    B: [ makePawn('B', 0), makePawn('B', 1), makePawn('B', 2), makePawn('B', 3) ],
+};
+
+function diceBackground(c) {
+    var g = new Graphics();
+    g.beginFill(c);
+    g.drawRect(0, 0, 1.4*settings.size, 1.4*settings.size);
+    g.endFill();
+    g.position.x = -0.2*settings.size;
+    g.position.y = -0.2*settings.size;
+    return g;
+}
+
+let dicePoints = [
+    [],
+    [[0.5, 0.5]],
+    [[0.2, 0.2], [0.8, 0.8]],
+    [[0.2, 0.2], [0.8, 0.8], [0.5, 0.5]],
+    [[0.2, 0.2], [0.8, 0.8], [0.2, 0.8], [0.8, 0.2]],
+    [[0.2, 0.2], [0.8, 0.8], [0.2, 0.8], [0.8, 0.2], [0.5, 0.5]],
+    [[0.2, 0.2], [0.8, 0.8], [0.2, 0.8], [0.8, 0.2], [0.2, 0.5], [0.8, 0.5]]
+];
+
+function drawValue(v) {
+    var g = new Graphics();
+    g.beginFill(0xFFFFFF);
+    g.drawRoundedRect(0, 0, settings.size, settings.size, 0.1*settings.size);
+    g.endFill();
+    for (var i = 0; i < dicePoints[v].length; i++) {
+        var p = dicePoints[v][i];
+        g.beginFill(0);
+        g.drawCircle(p[0]*settings.size, p[1]*settings.size, 0.1*settings.size);
+        g.endFill();
+    }
+    g.visible = false;
+    return g;
+}
+
+var Dice = function(c) {
+    this.view = new Container();
+    this.view.interactive = true;
+    this.view.on('pointerdown', () => rollDice(c));
+    this.view.addChild(diceBackground(fill[c]));
+    this.values = [
+        drawValue(0),
+        drawValue(1),
+        drawValue(2),
+        drawValue(3),
+        drawValue(4),
+        drawValue(5),
+        drawValue(6),
+    ];
+    for (var i = 0; i <= 6; i++)
+        this.view.addChild(this.values[i]);
+};
+
+Dice.prototype.setValue = function(value) {
+    for (var i = 0; i <= 6; i++)
+        this.values[i].visible = i == value;
+};
+
+var dices = {};
+for (var key in dicesPos) {
+    dices[key] = new Dice(key);
 }
